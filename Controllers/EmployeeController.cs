@@ -19,7 +19,7 @@ namespace IBASEmployeeService.Controllers
         {
             var employees = new List<Employee>() {
             new Employee() {
-                Id = "21",
+                Id = "24",
                 Name = "Mette Bangsbo",
                 Email = "meba@ibas.dk",
                 Department = new Department() {
@@ -43,6 +43,15 @@ namespace IBASEmployeeService.Controllers
                 Department = new Department() {
                     Id = 2,
                     Name = "Support"
+                }
+            },
+            new Employee() {
+                Id = "26",
+                Name = "Anders Gammelmand",
+                Email = "anders@gråguld.dk",
+                Department = new Department() {
+                    Id = 1,
+                    Name = "Alderdom"
                 }
             }
         };
