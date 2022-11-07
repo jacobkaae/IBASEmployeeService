@@ -53,6 +53,15 @@ namespace IBASEmployeeService.Controllers
                     Id = 1,
                     Name = "Alderdom"
                 }
+            },
+            new Employee() {
+                Id = "24",
+                Name = "Jacob Ungmand",
+                Email = "jacob@hvidguld.dk",
+                Department = new Department() {
+                    Id = 3,
+                    Name = "Ungdom"
+                }
             }
         };
             return employees;
