@@ -21,6 +21,6 @@ jobs:
         password: ${{ secrets.REGISTRY_PASSWORD }} 
     - run: | 
         docker build . -t ${{ secrets.REGISTRY_LOGIN_SERVER 
-        }}/ibasemployeeservice:${{ github.sha }} 
+        }}/ibasemployeeservice:latest
         docker push ${{ secrets.REGISTRY_LOGIN_SERVER 
-        }}/ibasemployeeservice:${{ github.sha }} 
+        }}/ibasemployeeservice:latest
