@@ -21,9 +21,9 @@ namespace IBASEmployeeService.Services
             this._container = dbClient.GetContainer(databaseName, containerName);
         }
 
-        public async Task AddItemAsync(Employee item)
+        public async Task AddItemAsync(Employee employee)
         {
-            await this._container.CreateItemAsync<Employee>(item, new PartitionKey(item.Id));
+            await this._container.CreateItemAsync<Employee>(employee, new PartitionKey(employee.Id));
         }
 
 

@@ -4,31 +4,45 @@ namespace IBASEmployeeService.Controllers
     using IBASEmployeeService.Models;
     using Microsoft.Azure.Cosmos;
     using IBASEmployeeService.Services;
+    using System.ComponentModel;
+    using Microsoft.Azure.Cosmos.Linq;
+    using System.Threading.Tasks;
 
     [ApiController]
     [Route("[controller]")]
     public class EmployeeController : ControllerBase
     {
-        private readonly ILogger<EmployeeController> _logger;
-        public EmployeeController(ILogger<EmployeeController> logger)
-        {
-            _logger = logger;
-        }
-
         private readonly ICosmosDbService _cosmosDbService;
-        public EmployeeController(ICosmosDbService cosmosDbService)
+
+        //public EmployeeController(ICosmosDbService cosmosDbService)
+        //{
+        //    _cosmosDbService = cosmosDbService;
+        //}
+
+        //[HttpGet("hej")]
+        //public async En Task<IActionResult> Index()
+        //{
+        //    return await _cosmosDbService.GetItemsAsync("SELECT * FROM c");
+        //}
+
+        [HttpGet("/test")]
+        public async Task<IEnumerable<Employee>> GetTestAsync()
         {
-            _cosmosDbService = cosmosDbService;
+            using CosmosClient client = new(
+                accountEndpoint: Environment.GetEnvironmentVariable("https://ibas-db-account-21919.documents.azure.com:443/"),
+                authKeyOrResourceToken: Environment.GetEnvironmentVariable("PcwW3yzebGOlhjkAjpxWfmL1jJ4x6WY9EH6wPx6RunhPR0WR9ugFocqMfEmio59XwSPaHBS5JUxSQ7MP6VYQsg=="));
+            var db = client.GetDatabase("IBasSupportDB");
+            var container = db.GetContainer("ibassupport");
+
+            var q = container.GetItemLinqQueryable<Employee>();
+            var iterator = q.ToFeedIterator();
+            var results = await iterator.ReadNextAsync();
+            return results;
         }
 
-        [HttpGet(Name = "API")]
-        public async IAsyncEnumerable<Employee> Get()
-        {
-            return await _cosmosDbService.GetItemsAsync("SELECT * FROM c"));
 
-        }
 
-        [HttpGet(Name = "GetEmployees")]
+        [HttpGet("/")]
         public IEnumerable<Employee> Get()
         {
             var employees = new List<Employee>() {
