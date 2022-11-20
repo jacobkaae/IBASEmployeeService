@@ -8,6 +8,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.Cosmos" Version="3.31.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="Docker.DotNet" Version="3.125.12" />
   </ItemGroup>
@@ -15,8 +16,10 @@
   <ItemGroup>
     <None Remove="Docker.DotNet" />
     <None Remove="Controllers\" />
+    <None Remove="Service\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Controllers\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 </Project>

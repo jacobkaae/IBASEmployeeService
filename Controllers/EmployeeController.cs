@@ -2,7 +2,9 @@ namespace IBASEmployeeService.Controllers
 {
     using Microsoft.AspNetCore.Mvc;
     using IBASEmployeeService.Models;
-    
+    using Microsoft.Azure.Cosmos;
+    using IBASEmployeeService.Services;
+
     [ApiController]
     [Route("[controller]")]
     public class EmployeeController : ControllerBase
@@ -13,6 +15,18 @@ namespace IBASEmployeeService.Controllers
             _logger = logger;
         }
 
+        private readonly ICosmosDbService _cosmosDbService;
+        public EmployeeController(ICosmosDbService cosmosDbService)
+        {
+            _cosmosDbService = cosmosDbService;
+        }
+
+        [HttpGet(Name = "API")]
+        public async IAsyncEnumerable<Employee> Get()
+        {
+            return await _cosmosDbService.GetItemsAsync("SELECT * FROM c"));
+
+        }
 
         [HttpGet(Name = "GetEmployees")]
         public IEnumerable<Employee> Get()
