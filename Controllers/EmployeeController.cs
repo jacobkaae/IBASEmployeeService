@@ -65,7 +65,9 @@ namespace IBASEmployeeService.Controllers
                 Bruger bruger = new Bruger { Navn = "Test", Email = "Test", Telefon = "Test"};
                 Henvendelse henvendelse = new Henvendelse { Id = Guid.NewGuid().ToString(), Beskrivelse = "Test", Dato = "Test", Bruger = bruger, Kategori = "Test"};
 
-                ItemResponse<Henvendelse> henvendelseResponse = await container.CreateItemAsync<Henvendelse>(henvendelse);
+                var tempPartitionKey = new PartitionKey(henvendelse.Kategori);
+
+                ItemResponse<Henvendelse> henvendelseResponse = await container.CreateItemAsync<Henvendelse>(henvendelse, tempPartitionKey);
             }
         }
 

@@ -10,6 +10,7 @@ namespace IBASEmployeeService.Models
 
         public string Dato {get;set;}
 
+        [JsonProperty(PropertyName = "kategori")]
         public string Kategori  {get;set;} 
 
         public Bruger Bruger {get;set; }
