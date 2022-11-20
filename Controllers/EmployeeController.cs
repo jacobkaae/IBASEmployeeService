@@ -7,6 +7,8 @@ namespace IBASEmployeeService.Controllers
     using System.ComponentModel;
     using Microsoft.Azure.Cosmos.Linq;
     using System.Threading.Tasks;
+    using Microsoft.Azure.Cosmos;
+    using Container = Microsoft.Azure.Cosmos.Container;
 
     [ApiController]
     [Route("[controller]")]
@@ -25,24 +27,36 @@ namespace IBASEmployeeService.Controllers
         //    return await _cosmosDbService.GetItemsAsync("SELECT * FROM c");
         //}
 
-        [HttpGet("/test")]
-        public async Task<IEnumerable<Employee>> GetTestAsync()
+        [HttpGet("/henvendelser")]
+        public async Task<List<Henvendelse>> GetTestAsync()
         {
-            using CosmosClient client = new(
-                accountEndpoint: Environment.GetEnvironmentVariable("https://ibas-db-account-21919.documents.azure.com:443/"),
-                authKeyOrResourceToken: Environment.GetEnvironmentVariable("PcwW3yzebGOlhjkAjpxWfmL1jJ4x6WY9EH6wPx6RunhPR0WR9ugFocqMfEmio59XwSPaHBS5JUxSQ7MP6VYQsg=="));
-            var db = client.GetDatabase("IBasSupportDB");
-            var container = db.GetContainer("ibassupport");
+            using (CosmosClient cosmosClient = new CosmosClient("https://ibas-db-account-21919.documents.azure.com:443/", "PcwW3yzebGOlhjkAjpxWfmL1jJ4x6WY9EH6wPx6RunhPR0WR9ugFocqMfEmio59XwSPaHBS5JUxSQ7MP6VYQsg=="))
+            {
+                Container container = cosmosClient.GetContainer("IBasSupportDB", "ibassupport");
 
-            var q = container.GetItemLinqQueryable<Employee>();
-            var iterator = q.ToFeedIterator();
-            var results = await iterator.ReadNextAsync();
-            return results;
+                using FeedIterator<Henvendelse> feed = container.GetItemQueryIterator<Henvendelse>(
+                 queryText: "SELECT * FROM C");
+
+                List<Henvendelse> list = new List<Henvendelse>();
+
+                while (feed.HasMoreResults)
+                {
+                    FeedResponse<Henvendelse> response = await feed.ReadNextAsync();
+
+                    // Iterate query results
+                    foreach (Henvendelse item in response)
+                    {
+                        list.Add(item);
+                    }
+                }
+
+                return list;
+            }
         }
 
 
 
-        [HttpGet("/")]
+        [HttpGet("/employees")]
         public IEnumerable<Employee> Get()
         {
             var employees = new List<Employee>() {
