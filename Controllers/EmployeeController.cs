@@ -56,18 +56,17 @@ namespace IBASEmployeeService.Controllers
 
 
         [HttpPost("/addHenvendelse")]
-        public async void Post()
+        public async void Post(HenvendelseDTO test)
         {
             using (CosmosClient cosmosClient = new CosmosClient("https://ibas-db-account-21919.documents.azure.com:443/", "PcwW3yzebGOlhjkAjpxWfmL1jJ4x6WY9EH6wPx6RunhPR0WR9ugFocqMfEmio59XwSPaHBS5JUxSQ7MP6VYQsg=="))
             {
                 Container container = cosmosClient.GetContainer("IBasSupportDB", "ibassupport");
 
-                Bruger bruger = new Bruger { Navn = "Test", Email = "Test", Telefon = "Test"};
-                Henvendelse henvendelse = new Henvendelse { Id = Guid.NewGuid().ToString(), Beskrivelse = "Test", Dato = "Test", Bruger = bruger, Kategori = "Test"};
+                Henvendelse nyHenvendelse = new Henvendelse { Id = Guid.NewGuid().ToString(), Beskrivelse = test.Beskrivelse, Bruger = test.Bruger, Dato = test.Dato, Kategori = test.Kategori };
 
-                var tempPartitionKey = new PartitionKey(henvendelse.Kategori);
+                var tempPartitionKey = new PartitionKey(test.Kategori);
 
-                ItemResponse<Henvendelse> henvendelseResponse = await container.CreateItemAsync<Henvendelse>(henvendelse, tempPartitionKey);
+                ItemResponse<Henvendelse> henvendelseResponse = await container.CreateItemAsync<Henvendelse>(nyHenvendelse, tempPartitionKey);
             }
         }
 
