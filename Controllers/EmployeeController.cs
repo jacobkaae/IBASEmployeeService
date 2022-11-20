@@ -55,7 +55,7 @@ namespace IBASEmployeeService.Controllers
         }
 
 
-        [HttpPost("/addHenvendelse")]
+        [HttpPost("/add")]
         public async void Post(HenvendelseDTO test)
         {
             using (CosmosClient cosmosClient = new CosmosClient("https://ibas-db-account-21919.documents.azure.com:443/", "PcwW3yzebGOlhjkAjpxWfmL1jJ4x6WY9EH6wPx6RunhPR0WR9ugFocqMfEmio59XwSPaHBS5JUxSQ7MP6VYQsg=="))
