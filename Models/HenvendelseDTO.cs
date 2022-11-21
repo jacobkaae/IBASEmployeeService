@@ -2,11 +2,8 @@ using Newtonsoft.Json;
 
 namespace IBASEmployeeService.Models
 {
-    public class Henvendelse
+    public class HenvendelseDTO
     {
-        [JsonProperty(PropertyName = "id")]
-        public string Id {get;set;}
-
         [JsonProperty(PropertyName = "beskrivelse")]
         public string? Beskrivelse {get;set;}
 

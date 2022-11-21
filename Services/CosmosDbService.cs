@@ -5,64 +5,57 @@ namespace IBASEmployeeService.Services
     using System.Linq;
     using System.Threading.Tasks;
     using IBASEmployeeService.Models;
+    using Microsoft.AspNetCore.Mvc;
     using Microsoft.Azure.Cosmos;
     using Microsoft.Azure.Cosmos.Fluent;
     using Microsoft.Extensions.Configuration;
 
-    public class CosmosDbService : ICosmosDbService
+    public class CosmosDbService
     {
         private Container _container;
 
-        public CosmosDbService(
-            CosmosClient dbClient,
-            string databaseName,
-            string containerName)
+        private CosmosClient dbClient;
+
+        public CosmosDbService(IConfiguration configuration)
         {
+            var databaseName = configuration["CosmosDb:DatabaseName"];
+            var containerName = configuration["CosmosDb:ContainerName"];
+            var account = configuration["CosmosDb:Account"];
+            var key = configuration["CosmosDb:Key"];
+
+            dbClient = new CosmosClient(account, key);
             this._container = dbClient.GetContainer(databaseName, containerName);
         }
 
-        public async Task AddItemAsync(Employee employee)
+        public async Task<List<Henvendelse>> GetHenvendelserAsync()
         {
-            await this._container.CreateItemAsync<Employee>(employee, new PartitionKey(employee.Id));
-        }
+            using FeedIterator<Henvendelse> feed = _container.GetItemQueryIterator<Henvendelse>(
+             queryText: "SELECT * FROM C");
 
+            List<Henvendelse> list = new List<Henvendelse>();
 
-        public async Task DeleteItemAsync(string id)
-        {
-            await this._container.DeleteItemAsync<Employee>(id, new PartitionKey(id));
-        }
-
-        public async Task<Employee> GetItemAsync(string id)
-        {
-            try
+            while (feed.HasMoreResults)
             {
-                ItemResponse<Employee> response = await this._container.ReadItemAsync<Employee>(id, new PartitionKey(id));
-                return response.Resource;
-            }
-            catch (CosmosException ex) when (ex.StatusCode == System.Net.HttpStatusCode.NotFound)
-            {
-                return null;
+                FeedResponse<Henvendelse> response = await feed.ReadNextAsync();
+
+                // Iterate query results
+                foreach (Henvendelse item in response)
+                {
+                    list.Add(item);
+                }
             }
 
+            return list;
+
         }
 
-        public async Task<IEnumerable<Employee>> GetItemsAsync(string queryString)
+        public async void PostHenvendelse(HenvendelseDTO test)
         {
-            var query = this._container.GetItemQueryIterator<Employee>(new QueryDefinition(queryString));
-            List<Employee> results = new List<Employee>();
-            while (query.HasMoreResults)
-            {
-                var response = await query.ReadNextAsync();
+            Henvendelse nyHenvendelse = new Henvendelse { Id = Guid.NewGuid().ToString(), Beskrivelse = test.Beskrivelse, Bruger = test.Bruger, Dato = test.Dato, Kategori = test.Kategori };
 
-                results.AddRange(response.ToList());
-            }
+            var tempPartitionKey = new PartitionKey(test.Kategori);
 
-            return results;
-        }
-
-        public async Task UpdateItemAsync(string id, Employee item)
-        {
-            await this._container.UpsertItemAsync<Employee>(item, new PartitionKey(id));
+            ItemResponse<Henvendelse> henvendelseResponse = await _container.CreateItemAsync<Henvendelse>(nyHenvendelse, tempPartitionKey);
         }
     }
 }
